@@ -1,0 +1,20 @@
+# Environments
+venv/
+env/
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+
+# Massive Datasets
+*.csv
+data/savant_data.csv
+data/Teams/
+
+# Machine Learning Artifacts
+*.pkl
+models/**/*.pkl
+models/exact_pitch_zone/*.pkl
+models/grouped_categories/*.pkl
+
+# Environment variables
+.env

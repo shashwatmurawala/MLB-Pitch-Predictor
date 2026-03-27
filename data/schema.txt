@@ -1,0 +1,115 @@
+Columns:
+- game_year
+- game_date
+- player_name
+- pitcher
+- batter
+- balls
+- strikes
+- inning
+- inning_topbot
+- at_bat_number
+- pitch_number
+- events
+- pitch_type
+- pitch_name
+- release_speed
+- release_pos_x
+- release_pos_z
+- description
+- spin_dir
+- spin_rate_deprecated
+- break_angle_deprecated
+- break_length_deprecated
+- zone
+- des
+- game_type
+- stand
+- p_throws
+- home_team
+- away_team
+- type
+- hit_location
+- bb_type
+- pfx_x
+- pfx_z
+- plate_x
+- plate_z
+- on_3b
+- on_2b
+- on_1b
+- outs_when_up
+- hc_x
+- hc_y
+- tfs_deprecated
+- tfs_zulu_deprecated
+- fielder_2
+- fielder_2.1
+- umpire
+- sv_id
+- vx0
+- vy0
+- vz0
+- ax
+- ay
+- az
+- sz_top
+- sz_bot
+- hit_distance_sc
+- launch_speed
+- launch_angle
+- effective_speed
+- release_spin_rate
+- release_extension
+- game_pk
+- fielder_2.2
+- fielder_2.3
+- fielder_3
+- fielder_4
+- fielder_5
+- fielder_6
+- fielder_7
+- fielder_8
+- fielder_9
+- release_pos_y
+- estimated_ba_using_speedangle
+- estimated_woba_using_speedangle
+- woba_value
+- woba_denom
+- babip_value
+- iso_value
+- launch_speed_angle
+- home_score
+- away_score
+- bat_score
+- fld_score
+- post_away_score
+- post_home_score
+- post_bat_score
+- post_fld_score
+- if_fielding_alignment
+- of_fielding_alignment
+- spin_axis
+- delta_home_win_exp
+- delta_run_exp
+- bat_speed
+- swing_length
+
+Sample Data:
+   game_year   game_date       player_name  pitcher  batter  balls  strikes  inning inning_topbot  at_bat_number  pitch_number events pitch_type pitch_name  release_speed  release_pos_x  release_pos_z    description  spin_dir  spin_rate_deprecated  break_angle_deprecated  break_length_deprecated  zone            des game_type stand p_throws home_team away_team type  hit_location bb_type  pfx_x  pfx_z  plate_x  plate_z  on_3b  on_2b  on_1b  outs_when_up  hc_x  hc_y  tfs_deprecated  tfs_zulu_deprecated  fielder_2  fielder_2.1  umpire  sv_id       vx0         vy0       vz0        ax         ay         az  sz_top  sz_bot  hit_distance_sc  launch_speed  launch_angle  effective_speed  release_spin_rate  release_extension  game_pk  fielder_2.2  fielder_2.3  fielder_3  fielder_4  fielder_5  fielder_6  fielder_7  fielder_8  fielder_9  release_pos_y  estimated_ba_using_speedangle  estimated_woba_using_speedangle  woba_value  woba_denom  babip_value  iso_value  launch_speed_angle  home_score  away_score  bat_score  fld_score  post_away_score  post_home_score  post_bat_score  post_fld_score if_fielding_alignment of_fielding_alignment  spin_axis  delta_home_win_exp  delta_run_exp  bat_speed  swing_length
+0       2025  2025-09-30  Ashcraft, Graham   668933  605141      0        0       8           Bot             73             1    NaN         SL     Slider           91.7          -0.30           6.43           ball       NaN                   NaN                     NaN                      NaN    12           Ball         F     R        R       LAD       CIN    B           NaN     NaN   0.55   0.03     0.20     3.68    NaN    NaN    NaN             0   NaN   NaN             NaN                  NaN     663886       663886     NaN    NaN  0.109715 -133.806972 -1.288816  6.606878  24.639232 -31.712889    3.23    1.49              NaN           NaN           NaN             90.7             2836.0                5.2   813069       663886       663886     701398     680574     663647     682829     668715     670770     682622          55.27                            NaN                              NaN         NaN         NaN          NaN        NaN                 NaN          10           5         10          5                5               10              10               5              Standard              Standard       42.0                 0.0          0.041        NaN           NaN
+1       2025  2025-09-30  Ashcraft, Graham   668933  605141      1        0       8           Bot             73             2    NaN         FC     Cutter           97.4          -0.06           6.56  called_strike       NaN                   NaN                     NaN                      NaN     2  Called Strike         F     R        R       LAD       CIN    S           NaN     NaN   0.13   0.82    -0.19     2.91    NaN    NaN    NaN             0   NaN   NaN             NaN                  NaN     663886       663886     NaN    NaN -0.626523 -141.845059 -6.110725  1.907766  29.700141 -20.007825    3.27    1.55              NaN           NaN           NaN             95.9             2384.0                5.2   813069       663886       663886     701398     680574     663647     682829     668715     670770     682622          55.31                            NaN                              NaN         NaN         NaN          NaN        NaN                 NaN          10           5         10          5                5               10              10               5              Standard              Standard      201.0                 0.0         -0.050        NaN           NaN
+
+Value counts for pitch_name:
+pitch_name
+4-Seam Fastball    4649
+Slider             2424
+Sinker             1988
+Changeup           1052
+Split-Finger       1047
+Curveball          1030
+Cutter              818
+Sweeper             655
+Knuckle Curve       351
+Slurve               82
+Name: count, dtype: int64
