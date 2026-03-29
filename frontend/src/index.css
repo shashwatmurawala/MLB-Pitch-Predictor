@@ -1,26 +1,35 @@
 :root {
-  --bg-primary: #0a0e1a;
-  --bg-secondary: #111827;
-  --bg-card: #1a2035;
-  --bg-input: #1e293b;
-  --border: #2d3a52;
-  --border-hover: #4a5a7a;
-  --text-primary: #f1f5f9;
-  --text-secondary: #94a3b8;
-  --text-muted: #64748b;
-  --accent: #3b82f6;
-  --accent-hover: #2563eb;
-  --accent-glow: rgba(59, 130, 246, 0.3);
+  --mlb-navy: #002D72;
+  --mlb-navy-light: #003A8C;
+  --mlb-navy-dark: #001F4F;
+  --mlb-red: #D50032;
+  --mlb-red-hover: #B8002B;
+  --mlb-red-glow: rgba(213, 0, 50, 0.35);
+  --mlb-white: #FFFFFF;
+  --mlb-silver: #C4CED4;
+
+  --bg-primary: #0B1120;
+  --bg-secondary: #0F1A2E;
+  --bg-card: #111D35;
+  --bg-input: #152240;
+  --border: #1E3460;
+  --border-hover: #2B4A80;
+  --text-primary: #F0F4FA;
+  --text-secondary: #8FA3C4;
+  --text-muted: #506A94;
+  --accent: var(--mlb-red);
+  --accent-hover: var(--mlb-red-hover);
+  --accent-glow: var(--mlb-red-glow);
   --success: #10b981;
   --warning: #f59e0b;
   --danger: #ef4444;
-  --zone-highlight: rgba(59, 130, 246, 0.5);
-  --gradient-start: #3b82f6;
-  --gradient-end: #8b5cf6;
+  --zone-highlight: rgba(213, 0, 50, 0.5);
+  --gradient-start: var(--mlb-red);
+  --gradient-end: var(--mlb-navy-light);
   --radius: 12px;
   --radius-sm: 8px;
-  --shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-  --shadow-lg: 0 8px 40px rgba(0, 0, 0, 0.5);
+  --shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 8px 40px rgba(0, 0, 0, 0.6);
   --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -57,7 +66,7 @@ body {
 .app-header h1 {
   font-size: 2.2rem;
   font-weight: 800;
-  background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+  background: linear-gradient(135deg, var(--mlb-red), #FF4D6D, var(--mlb-white));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -150,8 +159,8 @@ body {
 
 .form-select:focus,
 .form-input:focus {
-  border-color: var(--accent);
-  box-shadow: 0 0 0 3px var(--accent-glow);
+  border-color: var(--mlb-red);
+  box-shadow: 0 0 0 3px var(--mlb-red-glow);
 }
 
 /* ── Pitcher search ───────────────────────────────────── */
@@ -188,7 +197,7 @@ body {
 
 .pitcher-dropdown-item:hover,
 .pitcher-dropdown-item.active {
-  background: var(--accent);
+  background: var(--mlb-red);
   color: white;
 }
 
@@ -216,10 +225,10 @@ body {
 }
 
 .toggle-btn.active {
-  background: var(--accent);
-  border-color: var(--accent);
+  background: var(--mlb-red);
+  border-color: var(--mlb-red);
   color: white;
-  box-shadow: 0 0 12px var(--accent-glow);
+  box-shadow: 0 0 12px var(--mlb-red-glow);
 }
 
 /* ── Predict Button ───────────────────────────────────── */
@@ -227,7 +236,7 @@ body {
   width: 100%;
   padding: 0.85rem 1.5rem;
   margin-top: 1.25rem;
-  background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+  background: linear-gradient(135deg, var(--mlb-red), var(--mlb-red-hover));
   color: white;
   border: none;
   border-radius: var(--radius-sm);
@@ -236,11 +245,12 @@ body {
   cursor: pointer;
   transition: var(--transition);
   letter-spacing: 0.3px;
+  text-transform: uppercase;
 }
 
 .predict-btn:hover {
   transform: translateY(-1px);
-  box-shadow: 0 6px 24px rgba(59, 130, 246, 0.4);
+  box-shadow: 0 6px 24px var(--mlb-red-glow);
 }
 
 .predict-btn:active {
@@ -292,7 +302,7 @@ body {
 }
 
 .result-card:hover {
-  border-color: var(--accent);
+  border-color: var(--mlb-red);
   transform: translateX(4px);
 }
 
@@ -306,7 +316,7 @@ body {
 }
 
 .result-rank.rank-1 { color: #fbbf24; }
-.result-rank.rank-2 { color: #94a3b8; }
+.result-rank.rank-2 { color: var(--mlb-silver); }
 .result-rank.rank-3 { color: #d97706; }
 
 .result-info {
@@ -329,7 +339,7 @@ body {
 .result-prob {
   font-size: 1.1rem;
   font-weight: 700;
-  color: var(--accent);
+  color: var(--mlb-red);
   flex-shrink: 0;
 }
 
@@ -345,7 +355,7 @@ body {
 .result-prob-bar-fill {
   height: 100%;
   border-radius: 3px;
-  background: linear-gradient(90deg, var(--gradient-start), var(--gradient-end));
+  background: linear-gradient(90deg, var(--mlb-red), var(--mlb-navy-light));
   transition: width 0.6s ease;
 }
 
@@ -359,7 +369,7 @@ body {
   width: 20px;
   height: 20px;
   border: 2.5px solid var(--text-muted);
-  border-top-color: var(--accent);
+  border-top-color: var(--mlb-red);
   border-radius: 50%;
   animation: spin 0.7s linear infinite;
   margin-right: 0.5rem;
@@ -392,7 +402,7 @@ body {
   align-items: center;
   gap: 1.5rem;
   margin-bottom: 2rem;
-  background: var(--bg-card);
+  background: linear-gradient(180deg, var(--mlb-navy-dark), var(--bg-card));
   border: 1px solid var(--border);
   border-radius: var(--radius);
   padding: 1rem 2rem;
@@ -409,7 +419,7 @@ body {
 .scoreboard-label {
   font-size: 0.7rem;
   font-weight: 700;
-  color: var(--text-muted);
+  color: var(--mlb-silver);
   text-transform: uppercase;
   letter-spacing: 1px;
 }
@@ -429,7 +439,7 @@ body {
   font-weight: 800;
   padding: 0.3rem;
   background: var(--bg-primary);
-  border: 2px solid var(--border);
+  border: 2px solid var(--mlb-navy);
 }
 
 .scoreboard-vs {
@@ -440,7 +450,7 @@ body {
 .scoreboard-inning {
   font-size: 1.2rem;
   font-weight: 800;
-  color: var(--accent);
+  color: var(--mlb-red);
 }
 
 .scoreboard-count {
@@ -500,15 +510,15 @@ body {
 }
 
 .outcome-ball {
-  background: #1e40af;
-  color: #bfdbfe;
-  border-color: #2563eb;
+  background: var(--mlb-navy);
+  color: #a3bffa;
+  border-color: var(--mlb-navy-light);
 }
 
 .outcome-strike {
-  background: #991b1b;
+  background: #7f1d1d;
   color: #fecaca;
-  border-color: #dc2626;
+  border-color: var(--mlb-red);
 }
 
 .outcome-foul {
@@ -518,7 +528,7 @@ body {
 }
 
 .outcome-hbp {
-  background: #5b21b6;
+  background: #3b0764;
   color: #ddd6fe;
   border-color: #7c3aed;
 }
@@ -537,7 +547,7 @@ body {
 }
 
 .outcome-out {
-  background: #374151;
+  background: #1e293b;
   color: #d1d5db;
-  border-color: #6b7280;
+  border-color: #475569;
 }

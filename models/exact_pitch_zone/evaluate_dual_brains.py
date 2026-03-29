@@ -1,4 +1,5 @@
 import sys
+import os
 import pandas as pd
 import numpy as np
 import joblib
@@ -80,7 +81,8 @@ model_features = joblib.load('model_features.pkl')
 import warnings
 warnings.filterwarnings("ignore", category=UserWarning)
 
-with open('pitcher_repertoires.json') as f:
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
+with open(os.path.join(project_root, 'data', 'meta', 'pitcher_repertoires.json')) as f:
     pitcher_repertoires = json.load(f)
 
 # Align columns

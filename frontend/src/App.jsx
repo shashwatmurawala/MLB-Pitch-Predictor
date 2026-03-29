@@ -231,6 +231,7 @@ function App() {
   const [predictions, setPredictions] = useState(null);
   const [loading, setLoading] = useState(false);
   const [liveMode, setLiveMode] = useState(false);
+  const [predictionType, setPredictionType] = useState('exact'); // 'exact' or 'grouped'
   
   const [actualPitchType, setActualPitchType] = useState('');
   const [actualZone, setActualZone] = useState('');
@@ -253,7 +254,7 @@ function App() {
       const res = await fetch(`${API_BASE}/predict`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form),
+        body: JSON.stringify({ ...form, prediction_type: predictionType }),
       });
       const data = await res.json();
       setPredictions(data.predictions);
@@ -270,28 +271,44 @@ function App() {
 
   const handleOutcome = (outcome) => {
     const pitchToSave = actualPitchType || predictions?.[0]?.pitch_type || form.prev_pitch;
-    const zoneToSave = actualZone || predictions?.[0]?.zone || form.prev_zone;
+    const zoneToSave = actualZone || predictions?.[0]?.zone || form.prev_zone || 0;
     const updated = applyOutcome(form, outcome, pitchToSave, zoneToSave);
     setForm(updated);
     setPredictions(null);
   };
 
   const zoneHighlights = predictions
-    ? predictions.map(p => ({ zone: p.zone, probability: p.probability }))
+    ? predictions.filter(p => p.zone !== null).map(p => ({ zone: p.zone, probability: p.probability }))
     : [];
 
   return (
     <div className="app">
       <header className="app-header">
-        <h1>⚾ MLB Pitch Predictor</h1>
+        <h1>MLB Pitch Predictor</h1>
         <p>Predict the next pitch type and location based on game state</p>
+        <div style={{ marginTop: '0.75rem', display: 'flex', gap: '1rem', justifyContent: 'center' }}>
+          <button
+            className={`toggle-btn ${predictionType === 'exact' ? 'active' : ''}`}
+            onClick={() => { setPredictionType('exact'); setPredictions(null); }}
+            style={{ fontSize: '0.85rem' }}
+          >
+            Exact Pitch + Zone
+          </button>
+          <button
+            className={`toggle-btn ${predictionType === 'grouped' ? 'active' : ''}`}
+            onClick={() => { setPredictionType('grouped'); setPredictions(null); }}
+            style={{ fontSize: '0.85rem' }}
+          >
+            Grouped (Fastball/Breaking/Offspeed)
+          </button>
+        </div>
         <div style={{ marginTop: '0.75rem' }}>
           <button
             className={`toggle-btn ${liveMode ? 'active' : ''}`}
             onClick={() => setLiveMode(!liveMode)}
             style={{ fontSize: '0.85rem' }}
           >
-            {liveMode ? '🟢 Live Game Mode ON' : '⚪ Live Game Mode OFF'}
+            {liveMode ? 'Live Game Mode ON' : 'Live Game Mode OFF'}
           </button>
         </div>
       </header>
@@ -325,7 +342,7 @@ function App() {
       <div className="main-grid">
         {/* ── Left: Form ────────────────────────────────────────── */}
         <div className="card">
-          <div className="card-title"><span className="icon">🎯</span> Game Scenario</div>
+          <div className="card-title">Game Scenario</div>
           <div className="form-grid">
             <SearchableDropdown
               label="Pitcher"
@@ -442,20 +459,24 @@ function App() {
         {/* ── Right: Zone + Results ─────────────────────────────── */}
         <div>
           <div className="card">
-            <div className="card-title"><span className="icon">🎯</span> Strike Zone</div>
+            <div className="card-title">Strike Zone</div>
             <StrikeZone highlightedZones={zoneHighlights} />
           </div>
 
           {predictions && (
             <div className="results-section">
               <div className="card">
-                <div className="card-title"><span className="icon">📊</span> Top 5 Predictions</div>
+                <div className="card-title">Top 5 Predictions</div>
                 {predictions.map((p, i) => (
                   <div className="result-card" key={i}>
                     <div className={`result-rank rank-${i + 1}`}>#{i + 1}</div>
                     <div className="result-info">
                       <div className="result-pitch-name">{p.pitch_type}</div>
-                      <div className="result-zone-label">Zone {p.zone} — {p.zone_label}</div>
+                      {p.zone !== null ? (
+                        <div className="result-zone-label">Zone {p.zone} — {p.zone_label}</div>
+                      ) : (
+                        <div className="result-zone-label">{p.zone_label}</div>
+                      )}
                     </div>
                     <div className="result-prob-wrapper">
                       <div className="result-prob">{p.probability}%</div>
@@ -470,7 +491,7 @@ function App() {
               {/* ── Live Game Outcome Panel ─────────────────────── */}
               {liveMode && (
                 <div className="card live-panel">
-                  <div className="card-title"><span className="icon">🎮</span> What Happened?</div>
+                  <div className="card-title">What Happened?</div>
                   
                   <div className="form-grid" style={{ marginBottom: '1.25rem', paddingBottom: '1.25rem', borderBottom: '1px solid var(--border)' }}>
                     <div className="form-group">
@@ -504,7 +525,7 @@ function App() {
                       <button className="outcome-btn outcome-hit" onClick={() => handleOutcome('single')}>Single</button>
                       <button className="outcome-btn outcome-hit" onClick={() => handleOutcome('double')}>Double</button>
                       <button className="outcome-btn outcome-hit" onClick={() => handleOutcome('triple')}>Triple</button>
-                      <button className="outcome-btn outcome-hr" onClick={() => handleOutcome('home_run')}>Home Run 💣</button>
+                      <button className="outcome-btn outcome-hr" onClick={() => handleOutcome('home_run')}>Home Run</button>
                     </div>
                     <div className="outcome-group">
                       <span className="outcome-group-label">In Play — Out</span>

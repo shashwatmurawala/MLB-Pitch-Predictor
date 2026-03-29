@@ -38,20 +38,20 @@ export default function StrikeZone({ highlightedZones = [] }) {
         <g key={zone}>
           <rect
             x={x} y={y} width={cellW} height={cellH}
-            fill={opacity > 0 ? `rgba(59, 130, 246, ${opacity})` : 'transparent'}
-            stroke="#4a5a7a" strokeWidth="1"
+            fill={opacity > 0 ? `rgba(213, 0, 50, ${opacity})` : 'transparent'}
+            stroke="#1E3460" strokeWidth="1"
           />
           <text
             x={x + cellW / 2} y={y + cellH / 2 - 6}
             textAnchor="middle" dominantBaseline="central"
-            fill="#94a3b8" fontSize="10" fontWeight="600"
+            fill="#8FA3C4" fontSize="10" fontWeight="600"
           >
             {zone}
           </text>
           <text
             x={x + cellW / 2} y={y + cellH / 2 + 8}
             textAnchor="middle" dominantBaseline="central"
-            fill="#cbd5e1" fontSize="9"
+            fill="#a3bfda" fontSize="9"
           >
             {ZONE_LABELS[zone]}
           </text>
@@ -88,7 +88,7 @@ export default function StrikeZone({ highlightedZones = [] }) {
         {/* Outer strike zone border */}
         <rect
           x={gridX} y={gridY} width={gridW} height={gridH}
-          fill="none" stroke="#64748b" strokeWidth="2.5" rx="2"
+          fill="none" stroke="#C4CED4" strokeWidth="2.5" rx="2"
         />
 
         {/* Grid cells */}
@@ -101,21 +101,21 @@ export default function StrikeZone({ highlightedZones = [] }) {
             <g key={oz.zone}>
               <rect
                 x={oz.x} y={oz.y} width={oz.w} height={oz.h}
-                fill={opacity > 0 ? `rgba(239, 68, 68, ${opacity * 0.7})` : 'rgba(30, 41, 59, 0.5)'}
-                stroke="#2d3a52" strokeWidth="1" rx="4"
+                fill={opacity > 0 ? `rgba(0, 45, 114, ${opacity * 0.7})` : 'rgba(21, 34, 64, 0.5)'}
+                stroke="#1E3460" strokeWidth="1" rx="4"
                 strokeDasharray={opacity > 0 ? "none" : "4 2"}
               />
               <text
                 x={oz.x + oz.w / 2} y={oz.y + oz.h / 2 - 4}
                 textAnchor="middle" dominantBaseline="central"
-                fill="#64748b" fontSize="9" fontWeight="600"
+                fill="#506A94" fontSize="9" fontWeight="600"
               >
                 {oz.zone}
               </text>
               <text
                 x={oz.x + oz.w / 2} y={oz.y + oz.h / 2 + 8}
                 textAnchor="middle" dominantBaseline="central"
-                fill="#64748b" fontSize="8"
+                fill="#506A94" fontSize="8"
               >
                 {ZONE_LABELS[oz.zone]}
               </text>
@@ -139,11 +139,11 @@ export default function StrikeZone({ highlightedZones = [] }) {
                    ${gridX + gridW / 2},${gridY + gridH + 60}
                    ${gridX + gridW / 2 + 10},${gridY + gridH + 55}
                    ${gridX + gridW / 2 + 20},${gridY + gridH + 45}`}
-          fill="none" stroke="#64748b" strokeWidth="1.5"
+          fill="none" stroke="#C4CED4" strokeWidth="1.5"
         />
         <text
           x={gridX + gridW / 2} y={gridY + gridH + 73}
-          textAnchor="middle" fill="#64748b" fontSize="9"
+          textAnchor="middle" fill="#C4CED4" fontSize="9"
         >
           Home Plate
         </text>

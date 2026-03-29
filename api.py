@@ -7,18 +7,27 @@ from flask_cors import CORS
 app = Flask(__name__)
 CORS(app)
 
-# ── Load model artifacts ─────────────────────────────────────────────
-clf = joblib.load('models/exact_pitch_zone/rf_combined_predictor.pkl')
-target_encoder = joblib.load('models/exact_pitch_zone/target_encoder_combined.pkl')
-model_features = joblib.load('models/exact_pitch_zone/model_features.pkl')
-
+# ── Load Exact Models ──
+clf_exact = joblib.load('models/exact_pitch_zone/rf_combined_predictor.pkl')
+encoder_exact = joblib.load('models/exact_pitch_zone/target_encoder_combined.pkl')
+features_exact = joblib.load('models/exact_pitch_zone/model_features.pkl')
 try:
-    pitcher_brains = joblib.load('models/exact_pitch_zone/pitcher_brains.pkl')
-    batter_brains = joblib.load('models/exact_pitch_zone/batter_brains.pkl')
-except Exception as e:
-    pitcher_brains = {}
-    batter_brains = {}
+    pitcher_brains_exact = joblib.load('models/exact_pitch_zone/pitcher_brains.pkl')
+    batter_brains_exact = joblib.load('models/exact_pitch_zone/batter_brains.pkl')
+except Exception:
+    pitcher_brains_exact, batter_brains_exact = {}, {}
 
+# ── Load Grouped Models ──
+clf_grouped = joblib.load('models/grouped_categories/rf_grouped_predictor.pkl')
+encoder_grouped = joblib.load('models/grouped_categories/target_encoder_grouped.pkl')
+features_grouped = joblib.load('models/grouped_categories/model_features_grouped.pkl')
+try:
+    pitcher_brains_grouped = joblib.load('models/grouped_categories/pitcher_brains_grouped.pkl')
+    batter_brains_grouped = joblib.load('models/grouped_categories/batter_brains_grouped.pkl')
+except Exception:
+    pitcher_brains_grouped, batter_brains_grouped = {}, {}
+
+# ── Meta Data ──
 with open('data/meta/pitcher_list.json') as f:
     pitcher_list = json.load(f)
 with open('data/meta/pitch_names.json') as f:
@@ -27,7 +36,6 @@ with open('data/meta/team_list.json') as f:
     team_list = json.load(f)
 with open('data/meta/batter_list.json') as f:
     batter_list = json.load(f)
-
 try:
     with open('data/meta/pitcher_repertoires.json') as f:
         pitcher_repertoires = json.load(f)
@@ -42,26 +50,28 @@ ZONE_LABELS = {
     13: "Outside (Ball)", 14: "Below (Ball)"
 }
 
+PITCH_GROUPS = {
+    '4-Seam Fastball': 'Fastball', 'Sinker': 'Fastball', 'Cutter': 'Fastball', 'Fastball': 'Fastball',
+    'Slider': 'Breaking', 'Curveball': 'Breaking', 'Knuckle Curve': 'Breaking', 'Slurve': 'Breaking', 'Sweeper': 'Breaking', 'Slow Curve': 'Breaking',
+    'Changeup': 'Offspeed', 'Split-Finger': 'Offspeed', 'Knuckleball': 'Offspeed', 'Forkball': 'Offspeed', 'Screwball': 'Offspeed'
+}
+
 
 @app.route('/api/pitchers', methods=['GET'])
 def get_pitchers():
     return jsonify(pitcher_list)
 
-
 @app.route('/api/pitch_names', methods=['GET'])
 def get_pitch_names():
     return jsonify(pitch_names)
-
 
 @app.route('/api/teams', methods=['GET'])
 def get_teams():
     return jsonify(team_list)
 
-
 @app.route('/api/batters', methods=['GET'])
 def get_batters():
     return jsonify(batter_list)
-
 
 @app.route('/api/zone_labels', methods=['GET'])
 def get_zone_labels():
@@ -71,6 +81,7 @@ def get_zone_labels():
 @app.route('/api/predict', methods=['POST'])
 def predict():
     data = request.get_json()
+    prediction_type = data.get('prediction_type', 'exact') # 'exact' or 'grouped'
 
     input_data = {
         'balls': [int(data.get('balls', 0))],
@@ -94,21 +105,35 @@ def predict():
         'away_team': [data.get('away_team', 'Unknown')],
         'batter_name': [data.get('batter_name', 'Unknown')]
     }
-
     df = pd.DataFrame(input_data)
 
     categorical_cols = ['stand', 'p_throws', 'inning_topbot', 'prev_pitch_name', 'prev2_pitch_name',
                         'player_name', 'home_team', 'away_team', 'batter_name']
     X_encoded = pd.get_dummies(df, columns=categorical_cols)
 
-    X_aligned = pd.DataFrame(0, index=[0], columns=model_features)
+    # Context selection
+    if prediction_type == 'grouped':
+        clf = clf_grouped
+        target_encoder = encoder_grouped
+        model_feats = features_grouped
+        pitcher_brains = pitcher_brains_grouped
+        batter_brains = batter_brains_grouped
+    else:
+        clf = clf_exact
+        target_encoder = encoder_exact
+        model_feats = features_exact
+        pitcher_brains = pitcher_brains_exact
+        batter_brains = batter_brains_exact
+
+    # Align columns
+    X_aligned = pd.DataFrame(0, index=[0], columns=model_feats)
     for col in X_encoded.columns:
         if col in X_aligned.columns:
             X_aligned[col] = X_encoded[col].values
 
     import numpy as np
-    
     num_classes = len(target_encoder.classes_)
+    
     def get_aligned_probs(local_model, X_df):
         aligned = np.zeros(num_classes)
         local_probs = local_model.predict_proba(X_df)[0]
@@ -132,15 +157,24 @@ def predict():
     probabilities = (0.6 * p_prob) + (0.4 * b_prob)
     
     # ── Pitch Repertoire Masking ──
-    pitcher_name = input_data['player_name'][0]
     allowed_pitches = set(pitcher_repertoires.get(pitcher_name, pitch_names))
-    
-    masked_probs = np.zeros_like(probabilities)
-    for idx in range(len(probabilities)):
-        label = target_encoder.inverse_transform([idx])[0]
-        pitch_type = label.split(' | Zone ')[0]
-        if pitch_type in allowed_pitches:
-            masked_probs[idx] = probabilities[idx]
+    if prediction_type == 'grouped':
+        allowed_groups = {PITCH_GROUPS.get(p) for p in allowed_pitches if PITCH_GROUPS.get(p)}
+        if not allowed_groups:
+            allowed_groups = set(PITCH_GROUPS.values())
+            
+        masked_probs = np.zeros_like(probabilities)
+        for idx in range(len(probabilities)):
+            group = target_encoder.inverse_transform([idx])[0]
+            if group in allowed_groups:
+                masked_probs[idx] = probabilities[idx]
+    else:
+        masked_probs = np.zeros_like(probabilities)
+        for idx in range(len(probabilities)):
+            label = target_encoder.inverse_transform([idx])[0]
+            pitch_type = label.split(' | Zone ')[0]
+            if pitch_type in allowed_pitches:
+                masked_probs[idx] = probabilities[idx]
             
     total_prob = np.sum(masked_probs)
     if total_prob > 0:
@@ -148,7 +182,7 @@ def predict():
     else:
         masked_probs = probabilities
         
-    top_indices = masked_probs.argsort()[-5:][::-1]
+    top_indices = masked_probs.argsort()[::-1][:5]
 
     results = []
     for idx in top_indices:
@@ -156,16 +190,26 @@ def predict():
             continue
             
         label = target_encoder.inverse_transform([idx])[0]
-        parts = label.split(' | Zone ')
-        pitch_type = parts[0]
-        zone = int(parts[1])
-        results.append({
-            'pitch_type': pitch_type,
-            'zone': zone,
-            'zone_label': ZONE_LABELS.get(zone, 'Unknown'),
-            'probability': round(float(masked_probs[idx]) * 100, 2),
-            'label': label
-        })
+        
+        if prediction_type == 'grouped':
+            results.append({
+                'pitch_type': label,
+                'zone': None,
+                'zone_label': 'Group Prediction',
+                'probability': round(float(masked_probs[idx]) * 100, 2),
+                'label': label
+            })
+        else:
+            parts = label.split(' | Zone ')
+            pitch_type = parts[0]
+            zone = int(parts[1])
+            results.append({
+                'pitch_type': pitch_type,
+                'zone': zone,
+                'zone_label': ZONE_LABELS.get(zone, 'Unknown'),
+                'probability': round(float(masked_probs[idx]) * 100, 2),
+                'label': label
+            })
 
     return jsonify({'predictions': results})
 
